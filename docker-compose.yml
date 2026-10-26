@@ -1,0 +1,45 @@
+# Ambiente do trabalho: Neo4j (banco de grafos) + PostgreSQL opcional (comparativo)
+#
+# Subir só o Neo4j:           docker compose up -d
+# Subir também o PostgreSQL:  docker compose --profile comparativo up -d
+# Derrubar (mantém dados):    docker compose down
+# Derrubar e apagar dados:    docker compose down -v
+
+services:
+  neo4j:
+    image: neo4j:5
+    container_name: neo4j-rede-academica
+    ports:
+      - "7474:7474"   # Neo4j Browser (http://localhost:7474)
+      - "7687:7687"   # protocolo Bolt (cypher-shell, drivers)
+    environment:
+      NEO4J_AUTH: neo4j/senha12345   # usuário/senha (senha com no mínimo 8 caracteres)
+    volumes:
+      - neo4j_data:/data
+      - ./cypher:/scripts:ro        # scripts acessíveis dentro do container em /scripts
+    healthcheck:
+      test: ["CMD-SHELL", "cypher-shell -u neo4j -p senha12345 'RETURN 1' || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 20s
+
+  # Opcional: o mesmo caso em banco relacional, para o comparativo.
+  # Cria as tabelas e carrega os dados automaticamente na primeira subida.
+  postgres:
+    image: postgres:16
+    container_name: postgres-comparativo
+    profiles: ["comparativo"]
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: aluno
+      POSTGRES_PASSWORD: senha12345
+      POSTGRES_DB: rede_academica
+    volumes:
+      - ./sql/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ./sql/02_carga.sql:/docker-entrypoint-initdb.d/02_carga.sql:ro
+      - ./sql:/sql:ro
+
+volumes:
+  neo4j_data:
