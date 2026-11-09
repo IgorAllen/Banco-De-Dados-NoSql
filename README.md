@@ -2,7 +2,7 @@
 
 Trabalho Avaliativo de Bancos de Dados NoSQL, tipo **Grafos**.
 
-**Integrantes:** _(Moesio Lorran Almeida, Savio Rodrigues, Igor Costa)_
+**Integrantes:** Moesio Lorran Almeida, Savio Rodrigues e Igor Costa
 
 **Caso:** rede social acadêmica com alunos, disciplinas, professores e amizades, incluindo recomendação de "amigos de amigos".
 
@@ -17,12 +17,12 @@ Trabalho Avaliativo de Bancos de Dados NoSQL, tipo **Grafos**.
 ```
 .
 ├── README.md                    este arquivo (ambiente do zero)
-├── docker-compose.yml           Neo4j (e PostgreSQL opcional para o comparativo)
+├── docker-compose.yml           Neo4j (e SQL Server opcional para o comparativo)
 ├── cypher/
 │   ├── 01_carga.cypher          33 nós e 99 relações
 │   ├── 02_operacoes_crud.cypher inserir, consultar, atualizar e excluir
 │   └── 03_consultas.cypher      5 consultas do caso + ponto forte (caminho entre nós)
-├── sql/
+├── sql/                         SQL Server (T-SQL)
 │   ├── 01_schema.sql            modelo relacional (criação das tabelas)
 │   ├── 02_carga.sql             mesmos dados do grafo
 │   └── 03_consultas.sql         2 consultas reescritas + caminho em SQL
@@ -30,8 +30,8 @@ Trabalho Avaliativo de Bancos de Dados NoSQL, tipo **Grafos**.
 │   ├── modelagem.md             desenho do grafo e perguntas que o sistema responde
 │   ├── comparativo.md           diagrama ER, consultas lado a lado e conclusão
 │   ├── resultados.md            comando e resultado de cada consulta
-│   └── apresentacao.md          roteiro da apresentação e checklist de entrega
-└── prints/                      prints da execução no Neo4j Browser
+│   └── apresentacao.md          roteiro da apresentação
+└── prints/                      prints das consultas (C1 a C6) e saída do CRUD
 ```
 
 ---
@@ -102,22 +102,19 @@ docker compose exec neo4j cypher-shell -u neo4j -p senha12345 -f /scripts/03_con
 
 Para a demonstração, é mais visual copiar cada consulta do arquivo `cypher/03_consultas.cypher` e colar no Neo4j Browser, que mostra o resultado em tabela ou em grafo.
 
-### 7. (Opcional) Rodar o comparativo em SQL
+### 7. (Opcional) Rodar o comparativo em SQL Server (T-SQL)
 
-**Opção A, SQLite (sem Docker):** com o `sqlite3` instalado, ou com o DB Browser for SQLite:
+**Opção A, SQL Server já instalado (SSMS ou Azure Data Studio):** crie um banco chamado `rede_academica` e execute nele, nesta ordem, `sql/01_schema.sql`, `sql/02_carga.sql` e `sql/03_consultas.sql`.
 
-```bash
-sqlite3 comparativo.db < sql/01_schema.sql
-sqlite3 comparativo.db < sql/02_carga.sql
-sqlite3 comparativo.db < sql/03_consultas.sql
-```
-
-**Opção B, PostgreSQL via Docker:**
+**Opção B, SQL Server via Docker:** suba o container e aguarde cerca de 30 segundos até o SQL Server iniciar.
 
 ```bash
 docker compose --profile comparativo up -d
-docker compose exec postgres psql -U aluno -d rede_academica -f /sql/03_consultas.sql
+docker compose exec sqlserver /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "Senha@12345" -C -Q "CREATE DATABASE rede_academica"
+docker compose exec sqlserver /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "Senha@12345" -C -f 65001 -d rede_academica -i /sql/01_schema.sql,/sql/02_carga.sql,/sql/03_consultas.sql
 ```
+
+O `-f 65001` lê os scripts como UTF-8, para os acentos dos nomes saírem corretos.
 
 ### 8. Encerrar
 
@@ -135,6 +132,7 @@ docker compose down -v     # desliga e apaga os dados
 | `docker: command not found` | Instale e abra o Docker Desktop |
 | `http://localhost:7474` não abre | Espere até o `docker compose ps` mostrar `healthy`; veja `docker compose logs neo4j` |
 | Porta 7474 ou 7687 em uso | Feche outro Neo4j ou mude a porta à esquerda em `docker-compose.yml` |
+| `sqlcmd` não conecta ao SQL Server | Aguarde uns 30 segundos depois do `up`; veja `docker compose logs sqlserver` |
 | `ConstraintValidationFailed` | A carga já havia sido feita; o próprio `01_carga.cypher` começa limpando, então rode-o de novo |
 | Consulta devolve vazio | Confira se a carga foi executada e se o nome está escrito com acento, como `"João Pereira"` |
 
@@ -145,4 +143,4 @@ docker compose down -v     # desliga e apaga os dados
 - [Modelagem e perguntas do sistema](docs/modelagem.md)
 - [Resultados de cada consulta](docs/resultados.md)
 - [Comparativo com o relacional](docs/comparativo.md)
-- [Roteiro da apresentação e checklist](docs/apresentacao.md)
+- [Roteiro da apresentação](docs/apresentacao.md)

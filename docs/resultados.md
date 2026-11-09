@@ -1,6 +1,6 @@
 # Consultas e resultados
 
-Cada consulta abaixo traz o **comando** (idêntico ao de `cypher/03_consultas.cypher`) e o **resultado esperado**. Os resultados foram calculados de forma independente a partir dos mesmos dados e batem com o SQL equivalente executado no SQLite. O Cypher precisa ser executado no seu Neo4j: confira se sua saída coincide e salve o **print** em `prints/` com o nome indicado.
+Cada consulta abaixo traz o **comando** (idêntico ao de `cypher/03_consultas.cypher`), o **resultado** e o **print** da execução no Neo4j 5 via `cypher-shell`. As consultas C3 e C5 devolvem o mesmo resultado na versão em SQL (`sql/03_consultas.sql`).
 
 > Quando uma consulta usa `collect(...)`, a ordem dos nomes dentro da lista pode variar entre execuções; o conteúdo é o mesmo.
 
@@ -20,7 +20,7 @@ ORDER BY disciplina;
 | Estruturas de Dados | 80 | Helena Souza |
 | Inteligência Artificial | 80 | Marcos Andrade |
 
-Print: `prints/c1.png`
+![Print da C1](../prints/c1.png)
 
 ---
 
@@ -43,7 +43,7 @@ ORDER BY alunos DESC, disciplina;
 | Sistemas Operacionais | Ricardo Lima | 7 |
 | Cálculo I | Patrícia Gomes | 5 |
 
-Print: `prints/c2.png`
+![Print da C2](../prints/c2.png)
 
 ---
 
@@ -66,7 +66,7 @@ ORDER BY amigos_em_comum DESC, sugestao;
 | Eduarda Lopes | 1 | Carla Mendes |
 | Mateus Cardoso | 1 | Natália Araújo |
 
-Print: `prints/c3.png`
+![Print da C3](../prints/c3.png)
 
 ---
 
@@ -92,7 +92,7 @@ LIMIT 5;
 
 O `LIMIT 5` corta mais dois colegas empatados com 2 disciplinas (Sofia Carvalho e William Santos).
 
-Print: `prints/c4.png`
+![Print da C4](../prints/c4.png)
 
 ---
 
@@ -114,7 +114,7 @@ ORDER BY amigos_que_cursam DESC, disciplina_recomendada;
 | Redes de Computadores | 1 | Bruno Martins |
 | Sistemas Operacionais | 1 | Bruno Martins |
 
-Print: `prints/c5.png`
+![Print da C5](../prints/c5.png)
 
 ---
 
@@ -137,13 +137,26 @@ Existem **dois** caminhos de 4 saltos. `shortestPath` devolve um deles (pode ser
 1. Ana Costa, Carla Mendes, Eduarda Lopes, Larissa Freitas, William Santos
 2. Ana Costa, Natália Araújo, Mateus Cardoso, Larissa Freitas, William Santos
 
-Print: `prints/c6.png` (no Neo4j Browser, a consulta extra `MATCH caminho = ... RETURN caminho` mostra o caminho desenhado)
+![Print da C6](../prints/c6.png)
+
+Print da variante `allShortestPaths` (C6b), com os dois caminhos:
+
+![Print da C6b](../prints/c6b_todos_caminhos.png)
+
+Consulta extra: vizinhança da Ana até 2 saltos de amizade (no Neo4j Browser ela aparece desenhada como grafo):
+
+```cypher
+MATCH caminho = (:Aluno {nome: "Ana Costa"})-[:AMIGO_DE*1..2]-(:Aluno)
+RETURN caminho;
+```
+
+![Print da vizinhança da Ana](../prints/vizinhanca_ana.png)
 
 ---
 
 ## Operações (`cypher/02_operacoes_crud.cypher`)
 
-| Passo | Operação | Resultado esperado |
+| Passo | Operação | Resultado obtido |
 |---|---|---|
 | 1 a 3 | Criar a aluna Yasmin Prado, matriculá-la em 2 disciplinas e criar uma amizade com a Ana | 1 nó e 3 relações criados |
 | 4 | Consultar a Yasmin e suas disciplinas | semestre 1; Banco de Dados e Cálculo I |
@@ -156,13 +169,5 @@ Print: `prints/c6.png` (no Neo4j Browser, a consulta extra `MATCH caminho = ... 
 | 12 | `DETACH DELETE` da Yasmin | nó e relações restantes excluídos |
 | 13 | Conferência | `yasmin_existe` = 0 e `total_de_alunos` = 20 |
 
-Print: `prints/crud.png`
+Saída completa da execução: [`prints/crud.txt`](../prints/crud.txt)
 
----
-
-## Checklist dos prints
-
-- [ ] `prints/c1.png` a `prints/c6.png`
-- [ ] `prints/crud.png` (ou um print por operação)
-- [ ] `prints/grafo.png` (grafo completo desenhado no Neo4j Browser)
-- [ ] `prints/carga.png` (contagens da carga: 33 nós)

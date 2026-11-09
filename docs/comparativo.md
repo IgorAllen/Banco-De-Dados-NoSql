@@ -1,6 +1,6 @@
 # Comparativo com o banco relacional
 
-O mesmo caso (rede social acadêmica) foi modelado em SQL e carregado com **exatamente os mesmos dados** do grafo. Arquivos: [`sql/01_schema.sql`](../sql/01_schema.sql), [`sql/02_carga.sql`](../sql/02_carga.sql) e [`sql/03_consultas.sql`](../sql/03_consultas.sql).
+O mesmo caso (rede social acadêmica) foi modelado em SQL Server (T-SQL) e carregado com **exatamente os mesmos dados** do grafo. Arquivos: [`sql/01_schema.sql`](../sql/01_schema.sql), [`sql/02_carga.sql`](../sql/02_carga.sql) e [`sql/03_consultas.sql`](../sql/03_consultas.sql).
 
 ## Diagrama ER
 
@@ -105,7 +105,7 @@ GROUP BY d.nome
 ORDER BY amigos_que_cursam DESC, disciplina_recomendada;
 ```
 
-Os dois bancos devolvem o mesmo resultado (veja [`resultados.md`](resultados.md)). O SQL foi executado e conferido contra um cálculo independente.
+Os dois bancos devolvem o mesmo resultado (veja [`resultados.md`](resultados.md)).
 
 ### Extra: caminho mais curto (ponto forte do grafo)
 
@@ -124,7 +124,7 @@ No Cypher é `shortestPath((a)-[:AMIGO_DE*]-(b))`, uma linha. No SQL é uma CTE 
 
 ## Conclusão: neste caso, qual modelo é melhor e por quê?
 
-Para este caso, o modelo de grafos é melhor. As perguntas centrais do sistema (sugerir amigos de amigos, recomendar disciplinas pelos amigos, achar o caminho entre dois alunos) são travessias: partem de um aluno e seguem conexões. No grafo, a conexão é um dado armazenado e a consulta descreve o padrão do caminho. No relacional, cada salto vira um JOIN, e o caminho mais curto exige uma CTE recursiva com controle manual de ciclos. Na prática, as consultas C3 e C5 passaram de um padrão de caminho para três JOINs, um `NOT EXISTS` e um `GROUP BY`, e o relacional ainda precisou de uma view só para tratar a amizade nos dois sentidos. O esquema também é mais flexível: adicionamos `email` com um `SET`, enquanto no SQL foi preciso um `ALTER TABLE`.
+Para este caso, o modelo de grafos é melhor. As perguntas centrais do sistema (sugerir amigos de amigos, recomendar disciplinas pelos amigos, achar o caminho entre dois alunos) são travessias: partem de um aluno e seguem conexões. No grafo, a conexão é um dado armazenado e a consulta descreve o padrão do caminho. No relacional, cada salto vira um JOIN, e o caminho mais curto exige uma CTE recursiva com controle manual de ciclos. Na prática, as consultas C3 e C5 passaram de um padrão de caminho para três JOINs, um `NOT EXISTS` e um `GROUP BY`, e o relacional ainda precisou de uma view só para tratar a amizade nos dois sentidos. O esquema também é mais flexível: adicionamos `email` com um `SET`, enquanto no SQL seria preciso antes um `ALTER TABLE aluno ADD email VARCHAR(100)`, criando a coluna para todos os alunos.
 
 Com 20 alunos a diferença de desempenho é imperceptível, então o ganho que observamos aqui é de clareza e de manutenção das consultas, não de velocidade. Em redes grandes e consultas com muitos saltos, andar direto pelas arestas tende a escalar melhor do que encadear JOINs, mas isso não foi medido neste trabalho.
 

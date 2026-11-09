@@ -1,8 +1,8 @@
 -- ============================================================
 -- MODELO RELACIONAL do mesmo caso (Rede social acadêmica)
--- Compatível com PostgreSQL e SQLite.
+-- SQL Server (T-SQL). Rode no banco rede_academica.
 -- Ordem de execução: 01_schema.sql -> 02_carga.sql -> 03_consultas.sql
--- (PostgreSQL via Docker: veja docs/comparativo.md)
+-- (passo a passo no README, seção 7)
 -- ============================================================
 
 DROP VIEW  IF EXISTS amizade_bi;
@@ -58,6 +58,8 @@ CREATE TABLE amizade (
 
 -- A amizade é gravada uma vez só. Para consultar "nos dois sentidos"
 -- é preciso esta view (no Cypher bastava omitir a seta do padrão).
+-- No SQL Server, CREATE VIEW precisa estar sozinho no lote, por isso o GO.
+GO
 CREATE VIEW amizade_bi AS
   SELECT aluno_id AS a, amigo_id AS b FROM amizade
   UNION ALL

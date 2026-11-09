@@ -1,7 +1,7 @@
-# Ambiente do trabalho: Neo4j (banco de grafos) + PostgreSQL opcional (comparativo)
+# Ambiente do trabalho: Neo4j (banco de grafos) + SQL Server opcional (comparativo)
 #
 # Subir só o Neo4j:           docker compose up -d
-# Subir também o PostgreSQL:  docker compose --profile comparativo up -d
+# Subir também o SQL Server:  docker compose --profile comparativo up -d
 # Derrubar (mantém dados):    docker compose down
 # Derrubar e apagar dados:    docker compose down -v
 
@@ -24,21 +24,18 @@ services:
       retries: 12
       start_period: 20s
 
-  # Opcional: o mesmo caso em banco relacional, para o comparativo.
-  # Cria as tabelas e carrega os dados automaticamente na primeira subida.
-  postgres:
-    image: postgres:16
-    container_name: postgres-comparativo
+  # Opcional: o mesmo caso em banco relacional (SQL Server), para o comparativo.
+  # Os scripts ficam em /sql dentro do container (passo a passo no README, seção 7).
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver-comparativo
     profiles: ["comparativo"]
     ports:
-      - "5432:5432"
+      - "1433:1433"
     environment:
-      POSTGRES_USER: aluno
-      POSTGRES_PASSWORD: senha12345
-      POSTGRES_DB: rede_academica
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Senha@12345"   # o SQL Server exige senha forte
     volumes:
-      - ./sql/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
-      - ./sql/02_carga.sql:/docker-entrypoint-initdb.d/02_carga.sql:ro
       - ./sql:/sql:ro
 
 volumes:

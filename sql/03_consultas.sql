@@ -1,9 +1,10 @@
 -- ============================================================
--- CONSULTAS REESCRITAS EM SQL, versão para SQL SERVER (T-SQL)
--- C3 e C5 são iguais à versão padrão; só o caminho mais curto (C6) muda:
---   * sem a palavra RECURSIVE (o SQL Server já entende a CTE recursiva)
---   * concatenação com +  (em vez de ||)
---   * SELECT TOP 1       (em vez de LIMIT 1)
+-- CONSULTAS REESCRITAS EM SQL (SQL Server / T-SQL)
+-- Rode depois de 01_schema.sql e 02_carga.sql.
+-- C3 e C5: duas das 5 consultas do caso. C6: caminho mais curto (extra).
+-- Observações de T-SQL no C6:
+--   * a CTE recursiva não usa a palavra RECURSIVE
+--   * concatenação com +  e  SELECT TOP 1
 --   * CAST para VARCHAR(1000), porque os dois lados da CTE precisam ter o mesmo tipo
 -- ============================================================
 

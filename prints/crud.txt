@@ -1,0 +1,53 @@
+Saída de: docker compose exec neo4j cypher-shell -u neo4j -p senha12345 -f /scripts/02_operacoes_crud.cypher
+
+Added 1 nodes, Set 3 properties, Added 1 labels
+Created 2 relationships, Set 2 properties
+Created 1 relationships, Set 1 properties
++-------------------------------------------------------------+
+| aluna          | semestre | disciplinas                     |
++-------------------------------------------------------------+
+| "Yasmin Prado" | 1        | ["Banco de Dados", "Cálculo I"] |
++-------------------------------------------------------------+
++-------------+
+| amigo       |
++-------------+
+| "Ana Costa" |
++-------------+
++-----------------------------+
+| aluno            | semestre |
++-----------------------------+
+| "Paula Moreira"  | 5        |
+| "Sofia Carvalho" | 4        |
++-----------------------------+
++--------------------------------------------------------------------------------------------------------------------+
+| y                                                                                                                  |
++--------------------------------------------------------------------------------------------------------------------+
+| (:Aluno {nome: "Yasmin Prado", semestre: 2, curso: "Sistemas de Informação", email: "yasmin.prado@faculdade.edu"}) |
++--------------------------------------------------------------------------------------------------------------------+
+Set 2 properties
+Deleted 1 relationships
+Created 1 relationships, Set 1 properties
++-------------------+
+| disciplina        |
++-------------------+
+| "Banco de Dados"  |
+| "Programação Web" |
++-------------------+
++-------+
+| desde |
++-------+
+| 2025  |
++-------+
+Set 1 properties
+Deleted 1 relationships
+Deleted 1 nodes, Deleted 2 relationships
++---------------+
+| yasmin_existe |
++---------------+
+| 0             |
++---------------+
++-----------------+
+| total_de_alunos |
++-----------------+
+| 20              |
++-----------------+
